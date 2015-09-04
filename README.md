@@ -7,6 +7,16 @@ This README would normally document whatever steps are necessary to get your app
 First you need to have the Docker-toolbox for your platform from here: https://www.docker.com/toolbox
 OR if you are using OSX and homebrew, you can type `brew cask install docker-toolbox` in a terminal.
 
+## There's an automated script now ##
+
+run.sh will take care of everything to get wordpress up and running, as long as
+docker-toolbox has been installed on the system. However, I've only tested in OSX
+so YMMV.
+
+run.sh also has comments with some basic docker commands. 
+
+## Old manual process ##
+
 Once that's done, create a docker-machine for the wordpress container to run on.
 `docker-machine create --driver virtualbox wordpress` should do the trick. The last argument is going to be the name of your docker daemon.
 
