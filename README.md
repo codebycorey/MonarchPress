@@ -12,7 +12,7 @@ Once that's done, create a docker-machine for the wordpress container to run on.
 
 Next run the command: `eval "$(docker-machine env wordpress)"` <-- change "wordpress" to whatever you named your machine. This will add environment variables for your docker daemon and remove the need to type them in every time you type a docker command.
 
-Also probably want to type run `docker-machine ip wordpress` quickly and make note of the ip address returned -- this is what we'll type into the browser to see our wordpress site. You can add a custom entry to your /etc/hosts if you want, but it's not necessary.
+Also probably want to type/run: `docker-machine ip wordpress` quickly and make note of the ip address returned -- this is what we'll type into the browser to see our wordpress site. You can add a custom entry to your /etc/hosts if you want, but it's not necessary.
 
 And finally, type in `docker-compose up`. The first run will probably require downloading the wordpress and mariadb images from the docker hub registry, and then some text will scroll by. When it stops, and you see some messages that start `wordpress_1:` -- then your wordpress site should be up and ready to start poking around in. Changes should get saved locally to subdirectory `./src/`
 
