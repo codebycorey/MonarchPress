@@ -1,5 +1,5 @@
 wordpress:
-   image: wordpress
+   image: ewichern/wordpress
    links:
       - db:mysql
    ports:
