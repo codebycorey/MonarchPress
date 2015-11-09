@@ -1,0 +1,22 @@
+monarchpressdb:
+    image: mysql:5.7
+    environment:
+     - MYSQL_ROOT_PASSWORD=w@t3rg@t3
+     - MYSQL_DATABASE=monarchpress
+monarchpress:
+    image: wordpress
+    links:
+     - monarchpressdb:mysql
+    environment:
+     - WORDPRESS_DB_USER = monarchpress
+     - WORDPRESS_DB_PASSWORD=w@t3rg@t3
+    ports:
+     - "128.82.11.37:80:80"
+     - "128.82.11.37:443:443"
+    working_dir: /usr/local/monarchpress
+    volumes:
+     - ./wordpress/:/var/www/html/
+     - /etc/apache2/ssl/monarchpress.cs.odu.edu.crt:/etc/apache2/ssl/monarchpress.cs.odu.edu.crt
+     - /etc/apache2/ssl/monarchpress.cs.odu.edu.key:/etc/apache2/ssl/monarchpress.cs.odu.edu.key
+     - /etc/apache2/conf/httpd.conf:/etc/apache2/sites-available/default-ssl.conf
+     
