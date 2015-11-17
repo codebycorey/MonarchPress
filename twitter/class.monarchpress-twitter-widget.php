@@ -8,7 +8,11 @@ require_once('TwitterAPI.php');
 
 
 /**
+ * Wordpress Widget that displays tweets.
  *
+ * @package MonarchPress
+ * @author Corey O'Donnell <rcoreyodonnell@gmail.com>
+ * @version 1.0
  */
 class MonarchPress_Twitter_Widget extends WP_Widget {
 
@@ -72,8 +76,15 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
             'consumer_secret' => CONSUMER_SECRET
         );
 
+        $url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
+
+        $paramfield = '?screen_name=ODUMonarchPress';
+
         $twitter = new TwitterAPI($settings);
-        // print_r($twitter);
+        $twitter->setParams($paramfield)
+                ->buildOauth($url)
+                ->performRequest();
+        print_r($twitter->performRequest());
 
         return $twitter;
     }
