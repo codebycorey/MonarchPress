@@ -63,12 +63,19 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
         extract($args);
         extract($instance);
 
-        $data = $this->twitter(tweet_count, $username);
+        $data = $this->twitter($tweet_count, $username);
     }
 
-    private function twitter()
+    private function twitter($tweet_count, $username)
     {
-        // print_r(OAUTH_ACCESS_TOKEN);
+
+        if (empty($username)) return false;
+
+        $this->fetch_tweets($tweet_count, $username);
+    }
+
+    private function fetch_tweets($tweet_count, $username)
+    {
         $settings = array(
             'oauth_access_token' => OAUTH_ACCESS_TOKEN,
             'oauth_access_token_secret' => OAUTH_ACCESS_TOKEN_SECRET,
@@ -78,7 +85,7 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
 
         $url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
 
-        $paramfield = '?screen_name=ODUMonarchPress';
+        $paramfield = "?screen_name=$username";
 
         $twitter = new TwitterAPI($settings);
         $twitter->setParams($paramfield)

@@ -46,13 +46,11 @@ class TwitterAPI
     }
 
     /**
-     * Set getParams string, example: '?screen_name=J7mbo'
+     * Set getParams string.
      *
-     * @param string $string Get key and value pairs as string
+     * @param string $string
      *
-     * @throws \Exception
-     *
-     * @return \TwitterAPIExchange Instance of self for method chaining
+     * @return object
      */
     public function setParams($string)
     {
@@ -72,6 +70,15 @@ class TwitterAPI
         return $this;
     }
 
+    /**
+     * Method to generate the base string for cURL.
+     *
+     * @param  string $baseURI
+     * @param  string $method
+     * @param  array $params
+     *
+     * @return string
+     */
     private function buildBaseString($baseURI, $method, $params)
     {
         $return = array();
@@ -85,15 +92,10 @@ class TwitterAPI
     }
 
     /**
-     * Build the Oauth object using params set in construct and additionals
-     * passed to this method. For v1.1, see: https://dev.twitter.com/docs/api/1.1
+     * Build the Oauth object for the v1.1 Twitter API.
      *
-     * @param string $url           The API url to use. Example: https://api.twitter.com/1.1/search/tweets.json
-     * @param string $requestMethod Either POST or GET
-     *
-     * @throws \Exception
-     *
-     * @return \TwitterAPIExchange Instance of self for method chaining
+     * @param  string $url
+     * @return object
      */
     public function buildOauth($url)
     {
@@ -140,6 +142,12 @@ class TwitterAPI
         return $this;
     }
 
+    /**
+     * Method to generate authorization header for cURL.
+     *
+     * @param  array  $oauth
+     * @return string
+     */
     private function buildAuthorizationHeader(array $oauth)
     {
         $return = 'Authorization: OAuth ';
@@ -158,7 +166,7 @@ class TwitterAPI
     }
 
     /**
-     * Get getParams string (simple getter)
+     * Get getParams string.
      *
      * @return string $this->getParams
      */
@@ -167,16 +175,10 @@ class TwitterAPI
         return $this->getParams;
     }
 
-
     /**
-     * Perform the actual data retrieval from the API
+     * Perform the request to the Twitter API.
      *
-     * @param boolean $return      If true, returns data. This is left in for backward compatibility reasons
-     * @param array   $curlOptions Additional Curl options for this request
-     *
-     * @throws \Exception
-     *
-     * @return string json If $return param is true, returns json data.
+     * @return string
      */
     public function performRequest()
     {
