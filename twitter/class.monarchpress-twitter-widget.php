@@ -1,11 +1,15 @@
 <?php
+ini_set('display_errors', 1);
+
+require_once('config/config.php');
+require_once('TwitterAPI.php');
 
 
 
 
-
-
-
+/**
+ *
+ */
 class MonarchPress_Twitter_Widget extends WP_Widget {
 
     function __construct()
@@ -50,9 +54,28 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
         <?php
     }
 
-    public function widget()
+    public function widget($args, $instance)
     {
+        extract($args);
+        extract($instance);
 
+        $data = $this->twitter(tweet_count, $username);
+    }
+
+    private function twitter()
+    {
+        // print_r(OAUTH_ACCESS_TOKEN);
+        $settings = array(
+            'oauth_access_token' => OAUTH_ACCESS_TOKEN,
+            'oauth_access_token_secret' => OAUTH_ACCESS_TOKEN_SECRET,
+            'consumer_key' => CONSUMER_KEY,
+            'consumer_secret' => CONSUMER_SECRET
+        );
+
+        $twitter = new TwitterAPI($settings);
+        // print_r($twitter);
+
+        return $twitter;
     }
 
 }
