@@ -64,6 +64,16 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
         extract($instance);
 
         $data = $this->twitter($tweet_count, $username);
+        // var_dump($data)
+        if (false !== $data && isset($data->tweets)) {
+            echo $before_widget;
+                echo $before_title;
+                    echo $title;
+                echo $after_title;
+
+            echo '<ul><li>' . implode('</li><li>', $data->tweets). '</li></ul>';
+            echo $after_widget;
+        }
     }
 
     private function twitter($tweet_count, $username)
@@ -71,7 +81,15 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
 
         if (empty($username)) return false;
 
-        $this->fetch_tweets($tweet_count, $username);
+        $tweets = get_transient('recent_tweets_widget');
+
+        if (!$tweets ||
+            $tweets->username !== $username ||
+            $tweets->tweet_count !== $tweet_count) {
+            return $this->fetch_tweets($tweet_count, $username);
+        }
+
+        return $tweets;
     }
 
     private function fetch_tweets($tweet_count, $username)
@@ -84,16 +102,36 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
         );
 
         $url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
-
         $paramfield = "?screen_name=$username";
 
         $twitter = new TwitterAPI($settings);
-        $twitter->setParams($paramfield)
-                ->buildOauth($url)
-                ->performRequest();
-        print_r($twitter->performRequest());
+        $tweets = $twitter->setParams($paramfield)
+                          ->buildOauth($url)
+                          ->performRequest();
+        $tweets = json_decode($tweets);
+        // TODO : Code for error
 
-        return $twitter;
+        $data = new stdClass();
+        $data->username = $username;
+        $data->tweet_count = $tweet_count;
+        $data->tweets = array();
+
+        foreach($tweets as $tweet) {
+            if ($tweet_count-- === 0) break;
+            $data->tweets[] = $this->filter_tweet($tweet->text);
+        }
+
+        set_transient('recent_tweets_widget', $data, 60* 5);
+
+        return $data;
+    }
+
+    private function filter_tweet($tweet)
+    {
+        $tweet = preg_replace('/(http[^\s]+)/im', '<a href="$1">$1</a>', $tweet);
+        $tweet = preg_replace('/@([^\s]+)/i', '<a href="http://twitter.com/$1">@$1</a>', $tweet);
+        return $tweet;
+
     }
 
 }
