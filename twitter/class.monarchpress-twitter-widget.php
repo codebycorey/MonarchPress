@@ -6,29 +6,34 @@ require_once('TwitterAPI.php');
 
 
 
-add_shortcode('twitter', function($atts, $content) {
-    $atts = shortcode_atts(
-        array(
-            'username' => 'ODUMonarchPress',
-            'content' => !empty($content) ? $content: 'Follow me on Twitter!',
-            'show_tweets' => false,
-            'tweet_reset_time' => 10,
-            'num_tweets' => 5
-        ), $atts
-    );
-
-    extract($atts);
-
-    if ($show_tweets) {
-        $tweets = fetch_tweets($num_tweets, $username, $tweet_reset_time);
+class TwitterShortcode {
+    public function __construct()
+    {
+        add_shortcode('twitter', array($this, 'shortcode'));
     }
-    return 'hi';
-});
 
-function fetch_tweets($num_tweets, $username, $tweet_reset_time)
-{
+    public function shortcode($atts, $content)
+    {
+        $atts = shortcode_atts(
+            array(
+                'username' => 'ODUMonarchPress',
+                'content' => !empty($content) ? $content: 'Follow me on Twitter!',
+                'show_tweets' => false,
+                'tweet_reset_time' => 10,
+                'num_tweets' => 5
+            ), $atts
+        );
 
+        extract($atts);
+
+        if ($show_tweets) {
+            $tweets = fetch_tweets($num_tweets, $username, $tweet_reset_time);
+        }
+        return 'hi';
+    }
 }
+
+$twitterShort = new TwitterShortcode();
 
 /**
  * Wordpress Widget that displays tweets.
