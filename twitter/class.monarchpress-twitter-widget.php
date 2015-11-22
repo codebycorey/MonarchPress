@@ -7,6 +7,19 @@ require_once('TwitterAPI.php');
 
 
 
+add_shortcode('twitter', function($atts, $content) {
+    $atts = shortcode_atts(
+        array(
+            'test' => 'I am testing this',
+            'content' => !empty($content) ? $content: 'Follow me on Twitter!',
+            'show_tweets' => false,
+            'tweet_reset_time' => 10
+        ), $atts
+    );
+    return 'hi';
+});
+
+
 /**
  * Wordpress Widget that displays tweets.
  *
