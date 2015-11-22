@@ -4,8 +4,6 @@ ini_set('display_errors', 1);
 require_once('config/config.php');
 require_once('TwitterAPI.php');
 
-
-
 class TwitterShortcode {
     public function __construct()
     {
@@ -25,15 +23,73 @@ class TwitterShortcode {
         );
 
         extract($atts);
+        $data = $this->twitter($num_tweets, $username);
 
-        if ($show_tweets) {
-            $tweets = fetch_tweets($num_tweets, $username, $tweet_reset_time);
+        return '<ul><li>' . implode('</li><li>', $data->tweets). '</li></ul>';
+    }
+
+    private function twitter($tweet_count, $username)
+    {
+
+        if (empty($username)) return false;
+
+        $tweets = get_transient('recent_tweets_widget');
+        // print_r($tweets);
+
+        if (!$tweets) {
+            // return $tweets;
+            return $this->fetch_tweets($tweet_count, $username);
         }
-        return 'hi';
+
+        return $tweets;
+    }
+
+    private function fetch_tweets($tweet_count, $username)
+    {
+        $settings = array(
+            'oauth_access_token' => OAUTH_ACCESS_TOKEN,
+            'oauth_access_token_secret' => OAUTH_ACCESS_TOKEN_SECRET,
+            'consumer_key' => CONSUMER_KEY,
+            'consumer_secret' => CONSUMER_SECRET
+        );
+
+        $url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
+        $paramfield = "?screen_name=$username";
+
+        $twitter = new TwitterAPI($settings);
+        $tweets = $twitter->setParams($paramfield)
+                          ->buildOauth($url)
+                          ->performRequest();
+        // print_r($tweets);
+        $tweets = json_decode($tweets);
+
+
+        // return $tweets;
+        // TODO : Code for error
+
+        $data = new stdClass();
+        $data->username = $username;
+        $data->tweet_count = $tweet_count;
+        $data->tweets = array();
+
+        foreach($tweets as $tweet) {
+            if ($tweet_count-- === 0) break;
+            $data->tweets[] = $this->filter_tweet($tweet->text);
+        }
+
+        set_transient('recent_tweets_widget', $data, 60* 5);
+
+        return $data;
+    }
+
+    private function filter_tweet($tweet)
+    {
+        $tweet = preg_replace('/(http[^\s]+)/im', '<a href="$1">$1</a>', $tweet);
+        $tweet = preg_replace('/@([^\s]+)/i', '<a href="http://twitter.com/$1">@$1</a>', $tweet);
+        return $tweet;
+
     }
 }
-
-$twitterShort = new TwitterShortcode();
 
 /**
  * Wordpress Widget that displays tweets.
@@ -163,6 +219,8 @@ class MonarchPress_Twitter_Widget extends WP_Widget {
     }
 
 }
+
+$twitterShort = new TwitterShortcode();
 
 add_action('widgets_init', 'register_monarchpress_twitter_widget');
 function register_monarchpress_twitter_widget()
