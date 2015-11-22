@@ -104,12 +104,12 @@ class MonarchPressDb {
     }
 
     /*     * ******** Methods for monarch_article ********** */
-    public function insert_article($pubDate, $modDate, $content, $userId) {
-        return $this->mysqli->query("insert into wordpress.monarch_article (published_date, modified_date, content, user_id) values ('{$pubDate}', '{$modDate}', '{$content}', '{$userId}')");
+    public function insert_article($content, $userId) {
+        return $this->mysqli->query("insert into wordpress.monarch_article (published_date, modified_date, content, user_id) values (now(), now(), '{$content}', '{$userId}')");
     }
 
-    public function update_article_content($id, $modDate, $content) {
-        return $this->mysqli->query("update wordpress.monarch_article set modified_date='{$modDate}', content='{$content}' where id='{$id}'");
+    public function update_article_content($id, $content) {
+        return $this->mysqli->query("update wordpress.monarch_article set modified_date=now(), content='{$content}' where id='{$id}'");
     }
 
     public function search_article_by_userid($userId) {
@@ -134,12 +134,12 @@ class MonarchPressDb {
     }
     
     /*     * ******** Methods for monarch_blog_post ********** */
-    public function insert_blog_post($pubDate, $modDate, $content, $userId) {
-        return $this->mysqli->query("insert into wordpress.monarch_blog_post (published_date, modified_date, content, user_id) values ('{$pubDate}', '{$modDate}', '{$content}', '{$userId}')");
+    public function insert_blog_post($content, $userId) {
+        return $this->mysqli->query("insert into wordpress.monarch_blog_post (published_date, modified_date, content, user_id) values (now(), now(), '{$content}', '{$userId}')");
     }
     
-    public function update_blog_post_content($id, $modDate, $content) {
-        return $this->mysqli->query("update wordpress.monarch_blog_post set modified_date='{$modDate}', content='{$content}' where id='{$id}'");
+    public function update_blog_post_content($id, $content) {
+        return $this->mysqli->query("update wordpress.monarch_blog_post set modified_date=now(), content='{$content}' where id='{$id}'");
     }
 
     public function search_blog_post_by_userid($userId) {
@@ -168,5 +168,50 @@ class MonarchPressDb {
     }
     
     /*     * ******** Methods for monarch_whitelist_user ********** */
+    public function insert_whitelist_user($t_username) {
+        return $this->mysqli->query("insert into wordpress.monarch_whitelist_user (t_username) values ('{$t_username}')");
+    }
+    
+    public function update_whitelist_user($id, $t_username) {
+        return $this->mysqli->query("update wordpress.monarch_whitelist_user set t_username='{$t_username}' where id='{$id}'");
+    }
+    
+    public function delete_whitelist_user($id) {
+        return $this->mysqli->query("delete from wordpress.monarch_whitelist_user where id='{$id}'");
+    }
+    
+    public function search_whitelist_user_by_name($name) {
+        return $this->mysqli->query("SELECT * FROM wordpress.monarch_whitelist_user where t_username='{$name}'");
+    }
+    
+    /*     * ******** Methods for monarch_twitter_feed ********** */
+    public function insert_twitter_feed($name, $desc, $whitelistUser, $twitterFeedCacheId, $keywordId) {
+        return $this->mysqli->query("insert into wordpress.monarch_whitelist_user (name, desc, whitelist_user_id, twitter_feed_cache_id, keyword_id) values ('{$name}','{$desc}','{$whitelistUser}','{$twitterFeedCacheId}','{$keywordId}')");
+    }
+    
+    public function update_twitter_feed($id, $name, $desc, $whitelistUser, $twitterFeedCacheId, $keywordId) {
+        return $this->mysqli->query("update wordpress.monarch_twitter_feed set name='{$name}', desc='{$desc}', whitelist_user_id='{$whitelistUser}', twitter_feed_cache_id='{$twitterFeedCacheId}', keyword_id='{$keywordId}' where id='{$id}'");
+    }
+    
+    public function search_twitter_feed_by_name($name) {
+        return $this->mysqli->query("SELECT * FROM wordpress.monarch_twitter_feed where name='{$name}'");
+    }
+    
+    /*     * ******** Methods for monarch_twitter_feed_cache ********** */
+    public function insert_twitter_feed_cache($t_username, $tweet, $hashtag) {
+        return $this->mysqli->query("insert into wordpress.monarch_twitter_feed_cache (t_username, tweet, hashtag, time_created) values ('{$t_username}', '{$tweet}', '{$hashtag}', now())");
+    }
+    
+    public function update_twitter_feed_cache($id, $t_username, $tweet, $hashtag) {
+        return $this->mysqli->query("update wordpress.monarch_twitter_feed_cache set t_username='{$t_username}', tweet='{$tweet}', hashtag='{$hashtag}' where id='{$id}'");
+    }
+    
+    public function search_twitter_feed_cache_by_hashtag($hashtag) {
+        return $this->mysqli->query("SELECT * FROM wordpress.monarch_twitter_feed_cache where hashtag='{$hashtag}'");
+    }
+    
+    public function search_twitter_feed_cache_by_t_username($t_username) {
+        return $this->mysqli->query("SELECT * FROM wordpress.monarch_twitter_feed_cache where t_username='{$t_username}'");
+    }
 }
 ?>
