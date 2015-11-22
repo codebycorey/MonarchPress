@@ -26,6 +26,22 @@ class MonarchPressDb {
     public function update_user($id, $pwd, $question, $answer, $email, $t_handle) {
         return $this->mysqli->query("update wordpress.monarch_user set username='{$name}', password='{$pwd}', secret_question='{$question}', secret_answer='{$answer}', email='{$email}', twitter_handle='{$t_handle}' where id='{$id}'");
     }
+    
+    public function update_userPassword($email, $pwd) {
+        return $this->mysqli->query("update wordpress.monarch_user set password='{$pwd}' where email='{$email}'");
+    }
+    
+    public function update_userQuestion($email, $question) {
+        return $this->mysqli->query("update wordpress.monarch_user set secret_question='{$question}' where email='{$email}'");
+    }
+    
+    public function update_userAnswer($email, $answer) {
+        return $this->mysqli->query("update wordpress.monarch_user set secret_answer='{$answer}' where email='{$email}'");
+    }
+    
+    public function update_userTwitterHandle($email, $t_handle) {
+        return $this->mysqli->query("update wordpress.monarch_user set twitter_handle='{$t_handle}' where email='{$email}'");
+    }
 
     public function search_user_by_username($name) {
         return $this->mysqli->query("SELECT * FROM wordpress.monarch_user where username='{$name}'");
