@@ -1,0 +1,62 @@
+<?php
+class MonarchPressDb {
+    private $conn = NULL
+
+    public init($url, $user, $pwd, $db) {
+        $conn = mysqli_connect('localhost',$username,$password,$dbname);   
+    }
+    
+    /********** Methods for monarch_user table **********/
+    public insert_user($name, $pwd, $question, $answer, $email, $t_handle) {
+        return mydqli_query($conn, "insert into wordpress.monarch_user (username, password, secret_question, secret_answer, email, twitter_handle) values ({$name}, {$pwd}, {$question}, {$answer}, {$email}, {$t_handle});");
+    }
+    
+    public update_user($id, $pwd, $question, $answer, $email, $t_handle) {
+        return mydqli_query($conn, "update wordpress.monarch_user set username={$name}, password={$pwd}, secret_question={$question}, secret_answer={$answer}, email={$email}, twitter_handle={$t_handle} where id={$id};");
+    }
+    
+    public search_user_by_email($email){
+        return mydqli_query($conn, "SELECT * FROM wordpress.monarch_user where email={$email};");
+    }
+    
+    /********** Methods for monarch_role table **********/
+    public insert_role($role) {
+         return mydqli_query($conn, "insert into wordpress.monarch_role (role) values ({$role});");
+    }
+    
+    public update_role($id, $role) {
+        return mydqli_query($conn, "update wordpress.monarch_role set role={$role} where id={$id};");
+    }
+    
+    public search_role_by_id($id){
+        return mydqli_query($conn, "SELECT * FROM wordpress.monarch_role where id={$id};"); 
+    }
+    
+    /********** Methods for monarch_user_role table **********/
+    public insert_user_role($user_id, $role_id) {
+         return mydqli_query($conn, "insert into wordpress.monarch_role (role) values ({$role});");
+    }
+    
+    public update_role($id, $role) {
+        return mydqli_query($conn, "update wordpress.monarch_role set role={$role} where id={$id};");
+    }
+    
+    public search_role_by_id($id){
+        return mydqli_query($conn, "SELECT * FROM wordpress.monarch_role where id={$id};"); 
+    }
+    
+    /********** Methods for monarch_privilege table **********/
+    public insert_privilege($name, $desc) {
+        return mydqli_query($conn, "insert into wordpress.monarch_privilege (name, desc) values ({$name}, {$desc});");
+    }
+    
+    public update_privilege($id, $name, $desc) {
+        return mydqli_query($conn, "update wordpress.monarch_privilege set name={$name}, desc={$desc} where id={$id};");
+    }
+    
+    public search_privilege_by_name($name){
+        return mydqli_query($conn, "SELECT * FROM wordpress.monarch_privilege where id={$name};"); 
+    }
+    
+}
+?>
