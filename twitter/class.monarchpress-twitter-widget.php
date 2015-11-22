@@ -6,19 +6,29 @@ require_once('TwitterAPI.php');
 
 
 
-
 add_shortcode('twitter', function($atts, $content) {
     $atts = shortcode_atts(
         array(
-            'test' => 'I am testing this',
+            'username' => 'ODUMonarchPress',
             'content' => !empty($content) ? $content: 'Follow me on Twitter!',
             'show_tweets' => false,
-            'tweet_reset_time' => 10
+            'tweet_reset_time' => 10,
+            'num_tweets' => 5
         ), $atts
     );
+
+    extract($atts);
+
+    if ($show_tweets) {
+        $tweets = fetch_tweets($num_tweets, $username, $tweet_reset_time);
+    }
     return 'hi';
 });
 
+function fetch_tweets($num_tweets, $username, $tweet_reset_time)
+{
+
+}
 
 /**
  * Wordpress Widget that displays tweets.
