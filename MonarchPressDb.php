@@ -23,8 +23,8 @@ class MonarchPressDb {
         return $this->mysqli->query("insert into wordpress.monarch_user (username, password, secret_question, secret_answer, email, twitter_handle) values ('{$name}', '{$pwd}', '{$question}', '{$answer}', '{$email}', '{$t_handle}')");
     }
 
-    public function update_user($id, $pwd, $question, $answer, $email, $t_handle) {
-        return $this->mysqli->query("update wordpress.monarch_user set username='{$name}', password='{$pwd}', secret_question='{$question}', secret_answer='{$answer}', email='{$email}', twitter_handle='{$t_handle}' where id='{$id}'");
+    public function update_user($id, $pwd, $question, $answer, $t_handle, $email) {
+        return $this->mysqli->query("update wordpress.monarch_user set password='{$pwd}', secret_question='{$question}', secret_answer='{$answer}', twitter_handle='{$t_handle}' where email='{$email}'");
     }
 
     public function search_user_by_username($name) {
