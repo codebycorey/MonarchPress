@@ -95,5 +95,9 @@ class MonarchPressDb {
     public function search_privilege_by_privilegeid($privId){
         return $this->mysqli->query("SELECT * FROM wordpress.monarch_role_privilege where id='{$privId}';"); 
     }
+    
+    /********** Methods for monarch_article ***********/
+    
+    
 }
 ?>
