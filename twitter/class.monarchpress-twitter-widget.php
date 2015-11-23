@@ -1,8 +1,8 @@
 <?php
 ini_set('display_errors', 1);
 
-require_once('config/config.php');
-require_once('TwitterAPI.php');
+require_once(plugin_dir_path( __FILE__ ) . 'config/config.php');
+require_once(plugin_dir_path( __FILE__ ) . 'TwitterAPI.php');
 
 class TwitterShortcode {
     public function __construct()
@@ -23,25 +23,54 @@ class TwitterShortcode {
         );
 
         extract($atts);
-        $data = $this->twitter($num_tweets, $username);
+        $data = $this->twitter_cache($num_tweets, $username);
+        $data = $this->formate_tweets($data);
 
-        return '<ul><li>' . implode('</li><li>', $data->tweets). '</li></ul>';
+        return $data;
     }
 
-    private function twitter($tweet_count, $username)
+    private function formate_tweets($json)
     {
+        $data = json_decode($json, true);
+        $data = $data['statuses'];
 
-        if (empty($username)) return false;
+        $tweets = "<ul>";
 
-        $tweets = get_transient('recent_tweets_widget');
-        // print_r($tweets);
-
-        if (!$tweets) {
-            // return $tweets;
-            return $this->fetch_tweets($tweet_count, $username);
+        foreach ($data as $key => $tweet) {
+            $tweets .= "<li>" .$this->filter_tweet($data[$key]['text']) ."</li>";
         }
+        $tweets .= "</ul>";
 
         return $tweets;
+    }
+
+    private function twitter_cache($tweet_count, $username)
+    {
+
+        $cacheFile = plugin_dir_path( __FILE__ ).'cache.json';
+
+        if (file_exists($cacheFile)) {
+            $fh = fopen($cacheFile, 'r');
+            $cacheTime = trim(fgets($fh));
+
+            // if data was cached recently, return cached data
+            if ($cacheTime > strtotime('-10 minutes')) {
+                return fread($fh, filesize($cacheFile));
+            }
+
+            // else delete cache file
+            fclose($fh);
+            unlink($cacheFile);
+        }
+
+        $json = $this->fetch_tweets($tweet_count, $username);
+
+        $fh = fopen($cacheFile, 'w');
+        fwrite($fh, time() . "\n");
+        fwrite($fh, $json);
+        fclose($fh);
+
+        return $json;
     }
 
     private function fetch_tweets($tweet_count, $username)
@@ -53,33 +82,14 @@ class TwitterShortcode {
             'consumer_secret' => CONSUMER_SECRET
         );
 
-        $url = "https://api.twitter.com/1.1/statuses/user_timeline.json";
-        $paramfield = "?screen_name=$username";
+        $url = "https://api.twitter.com/1.1/search/tweets.json";
+        $paramfield = "?q=from:$username&count=$tweet_count";
 
         $twitter = new TwitterAPI($settings);
         $tweets = $twitter->setParams($paramfield)
                           ->buildOauth($url)
                           ->performRequest();
-        // print_r($tweets);
-        $tweets = json_decode($tweets);
-
-
-        // return $tweets;
-        // TODO : Code for error
-
-        $data = new stdClass();
-        $data->username = $username;
-        $data->tweet_count = $tweet_count;
-        $data->tweets = array();
-
-        foreach($tweets as $tweet) {
-            if ($tweet_count-- === 0) break;
-            $data->tweets[] = $this->filter_tweet($tweet->text);
-        }
-
-        set_transient('recent_tweets_widget', $data, 60* 5);
-
-        return $data;
+        return $tweets;
     }
 
     private function filter_tweet($tweet)
